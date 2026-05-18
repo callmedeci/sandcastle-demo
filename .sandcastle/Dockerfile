@@ -21,15 +21,14 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 ARG AGENT_UID=1000
 ARG AGENT_GID=1000
 
-# Rename the base image's "node" user to "agent" and align UID/GID.
-RUN groupmod -g $AGENT_GID node && usermod -u $AGENT_UID -g $AGENT_GID -d /home/agent -m -l agent node
-USER ${AGENT_UID}:${AGENT_GID}
-
 # Install Claude Code CLI
-RUN curl -fsSL https://claude.ai/install.sh | bash
+RUN npm install -g @anthropic-ai/claude-code
 
-# Add Claude to PATH
-ENV PATH="/home/agent/.local/bin:$PATH"
+# Rename the base image's "node" user to "agent" and align UID/GID.
+# -o (non-unique) lets us reuse the host's UID/GID even if they collide
+# with existing system IDs in the base image (e.g. GID 20 on macOS = dialout in Debian).
+RUN groupmod -o -g $AGENT_GID node && usermod -o -u $AGENT_UID -g $AGENT_GID -d /home/agent -m -l agent node
+USER ${AGENT_UID}:${AGENT_GID}
 
 WORKDIR /home/agent
 
