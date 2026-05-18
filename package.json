@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "echo 'no typecheck configured'"
+  },
   "dependencies": {
     "@ai-hero/sandcastle": "^0.5.10"
   }
